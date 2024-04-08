@@ -85,8 +85,8 @@ func main() {
 
     std := bufio.NewScanner(os.Stdin)
 
-    //buf
-    alvos := make(chan string)
+    // Use a buffered channel with a size equal to the concurrency level
+    alvos := make(chan string, concurrency)
     var wg sync.WaitGroup
 
     for i := 0; i < concurrency; i++ {
@@ -118,6 +118,8 @@ func main() {
         alvos <- line
     }
     close(alvos)
+
+    // Use waitgroup to wait for all goroutines to finish
     wg.Wait()
 }
 
