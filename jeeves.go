@@ -147,7 +147,7 @@ func jeeves(turl string, pTime int, proxy string, headers string) string {
 
     req, err := http.NewRequest("GET", turl, nil)
     if err != nil {
-        return "ERROR"
+        return "ERROR: " + err.Error()
     }
 
     if headers != "" {
@@ -156,9 +156,13 @@ func jeeves(turl string, pTime int, proxy string, headers string) string {
 
     resp, err := client.Do(req)
     if err != nil {
-        return "ERROR"
+        return "ERROR: " + err.Error()
     }
-    defer resp.Body.Close()
+    defer func() {
+        if resp != nil && resp.Body != nil {
+            resp.Body.Close()
+        }
+    }()
 
     if resp.StatusCode >= 300 {
         scstring := strconv.Itoa(resp.StatusCode)
@@ -206,12 +210,12 @@ func bodyReq(turl string, pTime int, proxy string, headers string, data string) 
     qwe := requestBody.Encode()
     decodedUrl, err := url.QueryUnescape(string(qwe))
     if err != nil {
-        return "ERROR"
+        return "ERROR: " + err.Error()
     }
 
     req, err := http.NewRequest("POST", turl, strings.NewReader(decodedUrl))
     if err != nil {
-        return "ERROR"
+        return "ERROR: " + err.Error()
     }
 
     if headers != "" {
@@ -220,9 +224,13 @@ func bodyReq(turl string, pTime int, proxy string, headers string, data string) 
 
     resp, err := client.Do(req)
     if err != nil {
-        return "ERROR"
+        return "ERROR: " + err.Error()
     }
-    defer resp.Body.Close()
+    defer func() {
+        if resp != nil && resp.Body != nil {
+            resp.Body.Close()
+        }
+    }()
 
     if resp.StatusCode >= 300 {
         scstring := strconv.Itoa(resp.StatusCode)
